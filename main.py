@@ -19,6 +19,13 @@ def main() -> None:
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8", newline="") as f:
         f.write(text)
+    # Verify the round trip: what landed on disk must be byte-exact,
+    # and still pass the same gates the pre-write text passed.
+    with open("/output/entry.txt", "rb") as f:
+        written = f.read().decode("utf-8")
+    assert written == text, "written entry does not match the entry text"
+    assert 1 <= len(written) <= 200, "written entry must be 1-200 characters"
+    assert "\n" not in written, "written entry must be a single line"
 
 
 if __name__ == "__main__":
